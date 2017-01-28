@@ -4,6 +4,23 @@ import math
 from scipy import signal
 import ncc
 
+def makePyramid(image, minsize):
+	[x,y] = image.size
+	res = []
+	while (x > minsize and y > minsize):
+		x = int(x*0.75)
+		y = int(x*0.75)
+		image_next = image.resize((x,y), Image.BICUBIC)
+		print x
+		print y
+		res.append(image_next)
+	return res
+
+def showPyramid(pyramid):
+	for i in range(len(pyramid)):
+		print i
+	return pyramid
+
 def boxfilter(n):
 	assert n%2 is not 0, "Dimension must be odd"
 	return np.full((n,n),1.0/(n*n), dtype = float)
@@ -30,11 +47,15 @@ def gaussconvolve2d(array,sigma):
 	array = signal.convolve2d(array,f,'same') # convolve with 2d filter of same size
 	return array
 
-im = Image.open('C:\UBC\CPSC425\\a2\\teemo.png')
-im = im.convert('L')
-im.save('C:\UBC\CPSC425\\a2\\gray_teemo.png','PNG')
+im = Image.open('C:\UBC\CPSC425\\a3\\faces\\template.jpg')
+pyramid = makePyramid(im, 10)
+showPyramid(pyramid)
 
-im_array = np.asarray(im)
-im_array = gaussconvolve2d(im_array,3)
-im2 = Image.fromarray(im_array.astype('uint8'))
-im2.save('C:\UBC\CPSC425\\a2\\convolved_teemo.png','PNG')
+# im = Image.open('C:\UBC\CPSC425\\a2\\teemo.png')
+# im = im.convert('L')
+# im.save('C:\UBC\CPSC425\\a2\\gray_teemo.png','PNG')
+
+# im_array = np.asarray(im)
+# im_array = gaussconvolve2d(im_array,3)
+# im2 = Image.fromarray(im_array.astype('uint8'))
+# im2.save('C:\UBC\CPSC425\\a2\\convolved_teemo.png','PNG')
