@@ -5,11 +5,11 @@ from scipy import signal
 import ncc
 
 # define constants
-pyramid_reduction = 0.75
+pyramid_reduction = 0.80
 pyramid_min_size = 5
-template_width = 15
-match_threshold = 0.65
-image_loc = 'faces\\students.jpg'
+template_width = 20
+match_threshold = 0.59
+image_loc = 'faces\\family.jpg'
 template_loc = 'faces\\template.jpg'
 
 # define functions
