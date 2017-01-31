@@ -8,18 +8,22 @@ def makePyramid(image, minsize):
 	[x,y] = image.size
 	res = []
 	while (x > minsize and y > minsize):
-		x = int(x*0.75)
-		y = int(x*0.75)
 		image_next = image.resize((x,y), Image.BICUBIC)
-		print x
-		print y
+		x = int(x*0.75)
+		y = int(y*0.75)
 		res.append(image_next)
 	return res
 
 def showPyramid(pyramid):
+	[x,y] = pyramid[0].size
+	image = Image.new("L", (x*3,y), "white");
+	
+	offset = 0
 	for i in range(len(pyramid)):
-		print i
-	return pyramid
+		image.paste(pyramid[i],(offset,y-pyramid[i].size[1]))
+		offset = offset + pyramid[i].size[0]
+	image.show()
+	return image
 
 def boxfilter(n):
 	assert n%2 is not 0, "Dimension must be odd"
@@ -47,7 +51,7 @@ def gaussconvolve2d(array,sigma):
 	array = signal.convolve2d(array,f,'same') # convolve with 2d filter of same size
 	return array
 
-im = Image.open('C:\UBC\CPSC425\\a3\\faces\\template.jpg')
+im = Image.open('G:\UBC\CPSC425\\assignments\\a3\\faces\\template.jpg')
 pyramid = makePyramid(im, 10)
 showPyramid(pyramid)
 
