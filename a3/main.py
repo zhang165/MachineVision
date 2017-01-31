@@ -55,12 +55,15 @@ def findTemplate(pyramid, template, threshold):
 			for k in range(len(corr[j])):
 				if(corr[j][k] > threshold):	# we've found a match
 					ratio = 1/(pyramid_reduction**i)
-					p = ratio*k -a/2 # find top left corner
-					q = ratio*j -b/2
-					draw.line((p,q,p+a,q),fill="red",width=2) #draw a box
-					draw.line((p,q,p,q+b),fill="red",width=2)
-					draw.line((p+a,q,p+a,q+b),fill="red",width=2)
-					draw.line((p,q+b,p+a,q+b),fill="red",width=2)
+					a_offset = ratio*a; # calculate offset 
+					b_offset = ratio*b;
+					p = ratio*k -a_offset/2 # find top left corner
+					q = ratio*j -b_offset/2
+					
+					draw.line((p,q,p+a_offset,q),fill="red",width=2) #draw a box
+					draw.line((p,q,p,q+b_offset),fill="red",width=2)
+					draw.line((p+a_offset,q,p+a_offset,q+b_offset),fill="red",width=2)
+					draw.line((p,q+b_offset,p+a_offset,q+b_offset),fill="red",width=2)
 	del draw
 	return marked
 
