@@ -9,8 +9,8 @@ pyramid_reduction = 0.75
 pyramid_min_size = 5
 template_width = 15
 match_threshold = 0.65
-image_loc = 'C:\UBC\CPSC425\\a3\\faces\\sports.jpg'
-template_loc = 'C:\UBC\CPSC425\\a3\\faces\\template.jpg'
+image_loc = 'faces\\students.jpg'
+template_loc = 'faces\\template.jpg'
 
 # define functions
 def makePyramid(image, minsize):
@@ -62,7 +62,7 @@ def findTemplate(pyramid, template, threshold):
 					b_offset = ratio*b;
 					p = ratio*k -a_offset/2 # find the center
 					q = ratio*j -b_offset/2
-					
+
 					draw.line((p,q,p+a_offset,q),fill="red",width=2) #draw a box
 					draw.line((p,q,p,q+b_offset),fill="red",width=2)
 					draw.line((p+a_offset,q,p+a_offset,q+b_offset),fill="red",width=2)
