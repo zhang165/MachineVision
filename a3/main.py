@@ -13,7 +13,7 @@ match_threshold = 0.65
 def makePyramid(image, minsize):
 	[x,y] = image.size
 	res = []
-	while (x > minsize and y > minsize):
+	while (x > minsize and y > minsize): # resize and append new image
 		image_next = image.resize((x,y), Image.BICUBIC)
 		x = int(x*pyramid_reduction)
 		y = int(y*pyramid_reduction)
@@ -22,8 +22,7 @@ def makePyramid(image, minsize):
 
 def showPyramid(pyramid):
 	[x,y] = pyramid[0].size
-	
-	length = 0	# find the length
+	length = 0	# calculate total length
 	for i in range(len(pyramid)):
 		length = length + pyramid[i].size[0]
 	
@@ -38,7 +37,7 @@ def showPyramid(pyramid):
 
 def resize(template, width=15):
 	[x,y] = template.size
-	ratio = (width/float(x))
+	ratio = (width/float(x)) # calculate aspect ratio
 	template = template.resize((width, int(y*ratio)), Image.BICUBIC) #resize image
 	return template
 
@@ -50,15 +49,15 @@ def findTemplate(pyramid, template, threshold):
 
 	for i in range(len(pyramid)): # for every image
 		[x,y] = pyramid[i].size
-		corr = ncc.normxcorr2D(pyramid[i],template)	
+		corr = ncc.normxcorr2D(pyramid[i],template)	# generate corr array
 
-		for j in range(len(corr)):
+		for j in range(len(corr)): # iterate to find positions 
 			for k in range(len(corr[j])):
 				if(corr[j][k] > threshold):	# we've found a match
 					ratio = 1/(pyramid_reduction**i)
-					p = ratio*k -a/2 # find corner
+					p = ratio*k -a/2 # find top left corner
 					q = ratio*j -b/2
-					draw.line((p,q,p+a,q),fill="red",width=2)
+					draw.line((p,q,p+a,q),fill="red",width=2) #draw a box
 					draw.line((p,q,p,q+b),fill="red",width=2)
 					draw.line((p+a,q,p+a,q+b),fill="red",width=2)
 					draw.line((p,q+b,p+a,q+b),fill="red",width=2)
@@ -66,8 +65,7 @@ def findTemplate(pyramid, template, threshold):
 	return marked
 
 
-
-# Run our script	
+# Run our scripts
 im = Image.open('G:\UBC\CPSC425\\assignments\\a3\\faces\\judybats.jpg')
 pyramid = makePyramid(im, 25) #create pyramid
 #showPyramid(pyramid)
