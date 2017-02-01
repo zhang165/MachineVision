@@ -9,7 +9,7 @@ pyramid_reduction = 0.80
 pyramid_min_size = 5
 template_width = 20
 match_threshold = 0.59
-image_loc = 'faces\\family.jpg'
+image_locs = ['faces\\family.jpg','faces\\fans.jpg','faces\\judybats.jpg','faces\\sports.jpg','faces\\students.jpg','faces\\tree.jpg']
 template_loc = 'faces\\template.jpg'
 
 # define functions
@@ -77,7 +77,7 @@ def findTemplate(pyramid, template, threshold):
 
 
 # Run our scripts
-im = Image.open(image_loc)
+im = Image.open(image_locs[2])
 pyramid = makePyramid(im, pyramid_min_size) #create pyramid
 #showPyramid(pyramid)
 
