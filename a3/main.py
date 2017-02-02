@@ -6,10 +6,10 @@ import ncc
 
 # define constants
 pyramid_reduction = 0.80
-pyramid_min_size = 5
+pyramid_min_size = 15
 template_width = 20
-match_threshold = 0.59
-image_locs = ['faces\\family.jpg','faces\\fans.jpg','faces\\judybats.jpg','faces\\sports.jpg','faces\\students.jpg','faces\\tree.jpg']
+match_threshold = 0.54
+image_locs = ['family.jpg','fans.jpg','judybats.jpg','sports.jpg','students.jpg','tree.jpg']
 template_loc = 'faces\\template.jpg'
 
 # define functions
@@ -75,14 +75,14 @@ def findTemplate(pyramid, template, threshold):
 	del draw
 	return marked
 
-
 # Run our scripts
-im = Image.open(image_locs[2])
-pyramid = makePyramid(im, pyramid_min_size) #create pyramid
-#showPyramid(pyramid)
-
 template = Image.open(template_loc)
 template = resize(template, template_width) # resize template
 
-marked = findTemplate(pyramid,template, match_threshold)
-marked.show()
+for i in range(len(image_locs)):
+	im = Image.open("faces\\"+image_locs[i])
+	pyramid = makePyramid(im, pyramid_min_size) #create pyramid
+	#showPyramid(pyramid)
+
+	marked = findTemplate(pyramid,template, match_threshold)
+	marked.save("output\\"+image_locs[i], "JPEG")
