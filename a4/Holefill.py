@@ -7,21 +7,20 @@ import pickle
 ##############################################################################
 #                        Functions for you to complete                       #
 ##############################################################################
-
 def ComputeSSD(TODOPatch, TODOMask, textureIm, patchL):
 	patch_rows, patch_cols, patch_bands = np.shape(TODOPatch)
 	tex_rows, tex_cols, tex_bands = np.shape(textureIm)
 	ssd_rows = tex_rows - 2 * patchL
 	ssd_cols = tex_cols - 2 * patchL
 	SSD = np.zeros((ssd_rows,ssd_cols))
+               
 	for r in range(ssd_rows):
 		for c in range(ssd_cols):
 			# Compute sum square difference between textureIm and TODOPatch
 			# for all pixels where TODOMask = 0, and store the result in SSD
-			#
-			# ADD YOUR CODE HERE
-			#
-			pass
+			# ignore empty pixels that have a value of 1 in the given mask image
+			if r < patch_rows and c < patch_cols and TODOMask[r][c] == 0:
+			    SSD[r][c] = sum((textureIm[r][c]*1.0 - TODOPatch[r][c]*1.0)**2)
 		pass
 	return SSD
 
@@ -32,10 +31,9 @@ def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,j
 			# Copy the selected patch selectPatch into the image containing
 			# the hole imHole for each pixel where TODOMask = 1.
 			# The patch is centred on iPatchCenter, jPatchCenter in the image imHole
-			#
-			# ADD YOUR CODE HERE
-			#
-			pass
+			if TODOMask[i][j] == 1:
+                            imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter+i-patchL][jMatchCenter+j-patchL]
+                            TODOMask[i][j] = 0 # Existing pixel values should not be overwritten
 		pass
 	return imHole
 
@@ -76,18 +74,19 @@ def Find_Edge(hole_mask):
 # Change patchL to change the patch size used (patch size is 2 *patchL + 1)
 patchL = 10
 patchSize = 2*patchL+1
+image_loc = 'donkey.jpg'
 
 # Standard deviation for random patch selection
 randomPatchSD = 1
 
 # Display results interactively
-showResults = True
+showResults = False
 
 #
 # Read input image
 #
 
-im = Image.open('donkey.jpg').convert('RGB')
+im = Image.open(image_loc).convert('RGB')
 im_array = np.asarray(im, dtype=np.uint8)
 imRows, imCols, imBands = np.shape(im_array)
 
@@ -215,6 +214,6 @@ while (nFill > 0):
 #
 # Output results
 #
-if showResults == True:
+if showResults == False:
 	Image.fromarray(imHole).convert('RGB').show()
 Image.fromarray(imHole).convert('RGB').save('results.jpg')
