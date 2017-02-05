@@ -20,8 +20,7 @@ def ComputeSSD(TODOPatch, TODOMask, textureIm, patchL):
 			# for all pixels where TODOMask = 0, and store the result in SSD
 			# ignore empty pixels that have a value of 1 in the given mask image
 			if r < patch_rows and c < patch_cols and TODOMask[r][c] == 0:
-			    SSD[r][c] = sum((textureIm[r][c]*1.0 - TODOPatch[r][c]*1.0)**2)
-		pass
+			    SSD[r][c] = np.sum((textureIm[r][c]*1.0 - TODOPatch[r][c])**2)
 	return SSD
 
 def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,jMatchCenter,patchL):
@@ -34,7 +33,6 @@ def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,j
 			if TODOMask[i][j] == 1:
                             imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter-i-patchL][jMatchCenter-j-patchL]
                             TODOMask[i][j] = 0 # Existing pixel values should not be overwritten
-		pass
 	return imHole
 
 ##############################################################################
