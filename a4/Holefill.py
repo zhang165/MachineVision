@@ -32,7 +32,7 @@ def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,j
 			# the hole imHole for each pixel where TODOMask = 1.
 			# The patch is centred on iPatchCenter, jPatchCenter in the image imHole
 			if TODOMask[i][j] == 1:
-                            imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter+i-patchL][jMatchCenter+j-patchL]
+                            imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter-i-patchL][jMatchCenter-j-patchL]
                             TODOMask[i][j] = 0 # Existing pixel values should not be overwritten
 		pass
 	return imHole
@@ -77,7 +77,7 @@ patchSize = 2*patchL+1
 image_loc = 'donkey.jpg'
 
 # Standard deviation for random patch selection
-randomPatchSD = 1
+randomPatchSD = 0.2
 
 # Display results interactively
 showResults = False
