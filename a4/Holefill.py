@@ -184,7 +184,7 @@ while (nFill > 0):
 
 		# Randomized selection of one of the best texture patches
 		ssdIm1 = np.sort(np.copy(ssdIm),axis=None)
-		ssdValue = ssdIm1[min(round(abs(random.gauss(0,randomPatchSD))),np.size(ssdIm1)-1)]
+		ssdValue = ssdIm1[int(min(round(abs(random.gauss(0,randomPatchSD))),np.size(ssdIm1)-1))]
 		ssdIndex = np.nonzero(ssdIm==ssdValue)
 		iSelectCenter = ssdIndex[0][0]
 		jSelectCenter = ssdIndex[1][0]
