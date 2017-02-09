@@ -19,8 +19,15 @@ def ComputeSSD(TODOPatch, TODOMask, textureIm, patchL):
 			# Compute sum square difference between textureIm and TODOPatch
 			# for all pixels where TODOMask = 0, and store the result in SSD
 			# ignore empty pixels that have a value of 1 in the given mask image
-			if r < patch_rows and c < patch_cols and TODOMask[r][c] == 0:
-			    SSD[r][c] = np.sum((textureIm[r][c]*1.0 - TODOPatch[r][c])**2)
+
+			# if r < patch_rows and c < patch_cols and TODOMask[r][c] == 0:
+			#     SSD[r][c] = np.sum((textureIm[r][c]*1.0 - TODOPatch[r][c]*1.0)**2)
+			temp = 0;
+			for y in range(patch_rows):
+				for x in range(patch_cols):
+					if(TODOMask[y][x]==0):
+						temp = temp + np.sum((textureIm[r+y][c+x]*1.0 - TODOPatch[y][x]*1.0)**2)
+			SSD[r][c] = temp;
 	return SSD
 
 def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,jMatchCenter,patchL):
@@ -31,7 +38,7 @@ def CopyPatch(imHole,TODOMask,textureIm,iPatchCenter,jPatchCenter,iMatchCenter,j
 			# the hole imHole for each pixel where TODOMask = 1.
 			# The patch is centred on iPatchCenter, jPatchCenter in the image imHole
 			if TODOMask[i][j] == 1:
-                            imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter-i-patchL][jMatchCenter-j-patchL]
+                            imHole[iPatchCenter+i-patchL][jPatchCenter+j-patchL] = textureIm[iMatchCenter+i-patchL][jMatchCenter+j-patchL]
                             TODOMask[i][j] = 0 # Existing pixel values should not be overwritten
 	return imHole
 
