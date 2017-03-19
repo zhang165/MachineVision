@@ -7,57 +7,60 @@ import numpy.linalg as lin
 
 # START OF FUNCTIONS CARRIED FORWARD FROM ASSIGNMENT 2
 
-#def boxfilter(n):
+def boxfilter(n):
+    assert n%2 is not 0, "Dimension must be odd"
+    return np.full((n,n),1.0/(n*n), dtype = float)
 
-#def gauss1d(sigma):
+def gauss1d(sigma):
+    # generate n, ensure n is odd
+    n = np.ceil(6*sigma)
+    n = n+1 if n%2 == 0 else n
 
-#def gauss2d(sigma):
+    i = np.arange(-np.floor(n/2),np.floor(n/2)+1,1) # generate the range
+    gauss = np.vectorize(lambda x: np.exp((-x**2)/(2*sigma**2))) # mapping function
+    i = gauss(i) # apply the map
+    return 1/sum(i)*i # return normalized
 
-#def gaussconvolve2d(image, sigma):
+def gauss2d(sigma):
+    i = gauss1d(sigma) # generate 1d guass
+    i = i[np.newaxis] # generate 2d 
+    i_t = np.transpose(i) # create transpose
+
+    return signal.convolve2d(i, i_t) # convolve i with i'
+
+def gaussconvolve2d(image, sigma):
+    f = gauss2d(sigma) # generate 2d filter
+    return signal.convolve2d(image,f,'same') # convolve with 2d filter of same size
 
 # END OF FUNCTIONS CARRIED FORWARD FROM ASSIGNMENT 2
 
 # Define a function, boxconvolve2d, to convolve an image with a boxfilter of size n
 # (used in Estimate_Derivatives below).
 
-#def boxconvolve2d(image, n):
+def boxconvolve2d(image, n):
+    f = boxfilter(n) # generate boxfilter
+    return signal.convolve2d(image,f,'same')
 
-def Estimate_Derivatives(im1, im2, sigma=1.5, n=3):
-    """
-    Estimate spatial derivatives of im1 and temporal derivative from im1 to im2.
-
-    Smooth im1 with a 2D Gaussian of the given sigma.  Use first central difference to
-    estimate derivatives.
-
-    Use point-wise difference between (boxfiltered) im2 and im1 to estimate temporal derivative
-    """
-    # UNCOMMENT THE NEXT FOUR LINES WHEN YOU HAVE DEFINED THE FUNCTIONS ABOVE
-    #im1_smoothed = gaussconvolve2d(im1,sigma)
-    #Ix, Iy = np.gradient(im1_smoothed)
-    #It = boxconvolve2d(im2, n) - boxconvolve2d(im1, n)
-    #return Ix, Iy, It
+def Estimate_Derivatives(im1, im2, sigma=1.5, n=3): # Estimate spatial derivatives of im1 and temporal derivative from im1 to im2.
+    im1_smoothed = gaussconvolve2d(im1,sigma) # Smooth im1 with a 2D Gaussian of the given sigma.
+    Ix, Iy = np.gradient(im1_smoothed) # Use first central difference to estimate derivatives.
+    It = boxconvolve2d(im2, n) - boxconvolve2d(im1, n) # Use point-wise difference between (boxfiltered) im2 and im1 to estimate temporal derivative
+    return Ix, Iy, It
 
 def Optical_Flow(im1, im2, x, y, window_size, sigma=1.5, n=3):
     assert((window_size % 2) == 1) , "Window size must be odd"
     # UNCOMMENT THE NEXT LINE WHEN YOU HAVE COMPLETED Estimate_Derivatives
-    #Ix, Iy, It = Estimate_Derivatives(im1, im2, sigma, n)
+    Ix, Iy, It = Estimate_Derivatives(im1, im2, sigma, n)
     half = np.floor(window_size/2)
     # select the three local windows of interest
-    # UNCOMMENT THE NEXT LINE WHEN YOU HAVE COMPLETED Estimate_Derivatives
-    # win_Ix = Ix[y-half-1:y+half, x-half-1:x+half].T
-    #
-    # PROVIDE THE REST OF THE IMPLEMENTATION HERE (BASED ON THE WIKIPEDIA ARTICLE)
-    #
-    # win_Iy =
-    # win Iy =
-    # A =
-    # V =
-    #################################
-    # change the return line to:
-    # return V[1], V[0]
-    # (when you have completed the implementation)
-    #################################
-    return -1, 2  # skeleton program returns a hard-coded value
+    win_Ix = Ix[int(y-half-1):int(y+half), int(x-half-1):int(x+half)].T # select window Ix
+    win_Iy = Iy[int(y-half-1):int(y+half), int(x-half-1):int(x+half)].T # select window Iy
+    b = It[int(y-half-1):int(y+half), int(x-half-1):int(x+half)].T # select window b
+
+    A = np.vstack((win_Ix.flatten(), win_Iy.flatten())).T # calculate A by vertically stacking win_Ix and win_Iy and transpose
+    A_TA_inv = np.linalg.pinv(np.dot(A.T,A)) # calculate ATA^-1
+    V = np.dot(A_TA_inv, np.dot(A.T,b.flatten())) # calculate V = ATA^-1 * ATb
+    return V[1], V[0]
 
 def AppendImages(im1, im2):
     """Create a new image that appends two images side-by-side.
@@ -99,40 +102,9 @@ def DisplayFlow(im1, im2, x, y, uarr, varr):
 def HitContinue(Prompt='Hit any key to continue'):
     raw_input(Prompt)
 
-##############################################################################
-#                  Here's your assigned target point to track                #
-##############################################################################
-
-# uncomment the next two lines if the leftmost digit of your student number is 0
-x=222
-y=213
-# uncomment the next two lines if the leftmost digit of your student number is 1
-#x=479
-#y=141
-# uncomment the next two lines if the leftmost digit of your student number is 2
-#x=411
-#y=242
-# uncomment the next two lines if the leftmost digit of your student number is 3
-#x=152
-#y=206
-# uncomment the next two lines if the leftmost digit of your student number is 4
-#x=278
-#y=277
-# uncomment the next two lines if the leftmost digit of your student number is 5
-#x=451
-#y=66
-# uncomment the next two lines if the leftmost digit of your student number is 6
-#x=382
-#y=65
-# uncomment the next two lines if the leftmost digit of your student number is 7
-#x=196
-#y=197
 # uncomment the next two lines if the leftmost digit of your student number is 8
-#x=274
-#y=126
-# uncomment the next two lines if the leftmost digit of your student number is 9
-#x=305
-#y=164
+x=274
+y=126
 
 ##############################################################################
 #                            Global "magic numbers"                          #
@@ -175,29 +147,29 @@ varr = [dy]
 
 # UNCOMMENT THE CODE THAT FOLLOWS (ONCE BASIC TESTING IS COMPLETE/DEBUGGED)
 
-#print 'frame 7 to 8'
-#DisplayFlow(PIL_im1, PIL_im2, x, y, uarr, varr)
-#HitContinue()
+print 'frame 7 to 8'
+DisplayFlow(PIL_im1, PIL_im2, x, y, uarr, varr)
+HitContinue()
 
-#prev_im = im2
-#xcurr = x+dx
-#ycurr = y+dy
-#offset = PIL_im1.size[0]
+prev_im = im2
+xcurr = x+dx
+ycurr = y+dy
+offset = PIL_im1.size[0]
 
-#for i in range(8, 14):
-#    im_i = 'frame%0.2d.png'%(i+1)
-#    print 'frame', i, 'to', (i+1)
-#    PIL_im_i = Image.open('%s'%im_i)
-#    numpy_im_i = np.asarray(PIL_im_i)
-#    dx, dy = Optical_Flow(prev_im, numpy_im_i, xcurr, ycurr, window_size, sigma, n)
-#    xcurr += dx
-#    ycurr += dy
-#    prev_im = numpy_im_i
-#    uarr.append(dx)
-#    varr.append(dy)
-#    # redraw the (growing) figure
-#    DisplayFlow(PIL_im1, PIL_im_i, x, y, uarr, varr)
-#    HitContinue()
+for i in range(8, 14):
+    im_i = 'frame%0.2d.png'%(i+1)
+    print 'frame', i, 'to', (i+1)
+    PIL_im_i = Image.open('%s'%im_i)
+    numpy_im_i = np.asarray(PIL_im_i)
+    dx, dy = Optical_Flow(prev_im, numpy_im_i, xcurr, ycurr, window_size, sigma, n)
+    xcurr += dx
+    ycurr += dy
+    prev_im = numpy_im_i
+    uarr.append(dx)
+    varr.append(dy)
+    # redraw the (growing) figure
+    DisplayFlow(PIL_im1, PIL_im_i, x, y, uarr, varr)
+    HitContinue()
 
 ##############################################################################
 # Don't forget to include code to document the sequence of (x, y) positions  #
