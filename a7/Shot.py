@@ -123,6 +123,10 @@ plt.show()
 
 fdiffs = np.zeros( nframes )
 # === ABSOLUTE FRAME DIFFERENCES ===
+for i in range( nframes ):
+    if i==0: # skip first to avoid indexing issue
+        continue
+    fdiffs[i] = np.sum(abs(grays[i]-grays[i-1])) # calculate the sum of abs difference between successive frames
 
 plt.figure(4)
 plt.xlabel('Frame number')
@@ -133,6 +137,10 @@ plt.show()
 
 sqdiffs = np.zeros( nframes )
 # === SQUARED FRAME DIFFERENCES ===
+for i in range( nframes ):
+    if i==0: # skip first to avoid indexing issue
+        continue
+    sqdiffs[i] = (np.sum(abs(grays[i]-grays[i-1]))**2) # calculate the squared sum of abs difference between successive frames
 
 plt.figure(5)
 plt.xlabel('Frame number')
@@ -143,6 +151,10 @@ plt.show()
 
 avgdiffs = np.zeros( nframes )
 # === AVERAGE GRAY DIFFERENCES ===
+for i in range( nframes ):
+    if i==0: # skip first to avoid indexing issue
+        continue
+    avgdiffs[i] = np.mean(grays[i])-np.mean(grays[i-1]) # calculate the mean of current and previous frames and take the difference
 
 plt.figure(6)
 plt.xlabel('Frame number')
@@ -152,7 +164,14 @@ plt.plot(avgdiffs)
 plt.show()
 
 histdiffs = np.zeros( nframes )
+prev_hist = compute_gray_histograms(grays[0], 10) # compute initial gray histogram
 # === HISTOGRAM DIFFERENCES ===
+for i in range( nframes ):
+    if i==0: # skip first to avoid indexing issue
+        continue
+    curr_hist = compute_gray_histograms(grays[i], 10) # compute current gray histogram
+    histdiffs[i] = np.linalg.norm(curr_hist-prev_hist) # find euclidean distance (l2-norm)
+    prev_hist = curr_hist # save previous histogram as current 
 
 plt.figure(7)
 plt.xlabel('Frame number')
