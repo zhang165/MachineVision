@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw
 import numpy as np
-from scipy.cluster.vq import vq, kmeans
+from scipy.cluster.vq import vq, kmeans, whiten
 from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 
@@ -36,9 +36,26 @@ def compute_gray_histograms( grays, nbins ):
 
 
 def compute_color_histograms( colors, nbins ):
-    # === WRITE THE FUNCTION HERE ===
-    pass
+    red_hs = np.zeros(( nframes, nbins ), dtype = np.uint16 ); # red histgrams
+    green_hs = np.zeros(( nframes, nbins ), dtype = np.uint16 ); # green histograms
+    blue_hs = np.zeros(( nframes, nbins ), dtype = np.uint16 ); # blue histograms
 
+    for i in range( len(colors) ):
+        red_im = colors[i,:,:,0] # save red image
+        green_im = colors[i,:,:,1] # save green image
+        blue_im = colors[i,:,:,2] # save blue image
+
+        r1 = np.histogram(red_im.flatten(),bins=nbins, range=(0,255)) # flatten and histogram red
+        g1 = np.histogram(green_im.flatten(),bins=nbins, range=(0,255)) # flatten and histogram green
+        b1 = np.histogram(blue_im.flatten(),bins=nbins, range=(0,255)) # flatten and histogram blue
+        red_hs[i] = r1[0]
+        green_hs[i] = g1[0]
+        blue_hs[i] = b1[0]
+
+    return np.hstack(red_hs,green_hs,blue_hs); # stack the histograms together
+
+# for debugging
+np.set_printoptions(threshold=np.nan)
 
 # === Main code starts here ===
 fname     = 'colours' # folder name 
@@ -47,7 +64,7 @@ im_height = 90        # image height
 im_width  = 120       # image width
 
 # define the list of (manually determined) shot boundaries here
-good_boundaries = [];
+good_boundaries = [33,92,143]
 
 # convert good_boundaries list to a binary array
 gb_bool = np.zeros( nframes+1, dtype = np.bool )
@@ -72,7 +89,10 @@ color_costs = np.zeros( len(nbins) );
 
 # === GRAY HISTOGRAMS ===
 for n in nbins:
-    pass
+    gray_histogram = compute_gray_histograms(grays, n) # generate the gray histogram
+    codebook, distortion = kmeans(whiten(gray_histogram), nclusters) # use pythons kmeans to get clusters
+    boundaries = cluster2boundaries(gray_histogram, codebook) # compute the boundaries
+    gray_costs[n-2] = get_boundaries_cost(boundaries, gb_bool) #save cost for given bin size
 # === END GRAY HISTOGRAM CODE ===
 
 plt.figure(1);
@@ -86,7 +106,10 @@ plt.show()
 
 # === COLOR HISTOGRAMS ===
 for n in nbins:
-    pass
+    color_histogram = compute_gray_histograms(colors, n) # generate the color histogram
+    codebook, distortion = kmeans(whiten(color_histogram), nclusters) # use pythons kmeans to get clusters
+    boundaries = cluster2boundaries(color_histogram, codebook) # compute the boundaries
+    color_costs[n-2] = get_boundaries_cost(boundaries, gb_bool) #save cost for given bin size
 # === END COLOR HISTOGRAM CODE ===
 
 plt.figure(2);
